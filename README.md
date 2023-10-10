@@ -1,16 +1,29 @@
 # cobol
 Main Features of the System:
 
-Littering Reporting: Any citizen must be able to report the presence of litter.
-Manage Reports: Authorities must be able to access a Web Dashboard to visualize information about the citizen's reports and activate disposal actions.
+Littering Reporting:
 
-Littering Disposal: Authorities, when disposing of the collected littering, shall be able to add information about the nature and type of disposed litter to reports (e.g., improving the accuracy of the data reported by citizens in the first place).
+Any citizen must be able to report the presence of litter.
 
-Data Collection and Storage: Images and data collected by multiple municipalities are stored together to form a knowledge base.
+Manage Reports: 
 
-Gamification: Citizens must be rewarded for their reports and for confirming or revealing issues in others' reports.
+Authorities must be able to access a Web Dashboard to visualize information about the citizens' reports and activate disposal actions.
 
-Transparent Littering Reporting: If authorized by a user, the app can also scan existing photos and check for any littering in the background.
+Littering Disposal: 
+
+Authorities, when disposing of the collected littering, shall be able to add information about the nature and type of disposed litter to reports (e.g., improving the accuracy of the data reported by citizens in the first place).
+
+Data Collection and Storage: 
+
+Images and data collected by multiple municipalities are stored together to form a knowledge base.
+
+Gamification:
+
+Citizens must be rewarded for their reports and for confirming or revealing issues in others' reports.
+
+Transparent Littering Reporting:
+
+If authorized by a user, the app can also scan existing photos and check for any littering in the background.
 
 Suggested Technical Requirements:
 
