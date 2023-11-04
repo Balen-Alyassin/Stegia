@@ -1,3 +1,8 @@
+# How to run the project
+1. cd frontend/cobol
+2. npm install
+3. npm start
+
 # cobol
 Main Features of the System:
 
