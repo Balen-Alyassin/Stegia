@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { ColorModeContext, useMode } from "./theme";
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseLine from '@mui/material/CssBaseline';
+import { Routes, Route} from "react-router-dom";
+import Topbar from "./scenes/global/Topbar";
+import Dashboard from "./scenes/dashboard";
+import Sidebar  from "./scenes/global/Sidebar";
+import Team from "./scenes/team";
+import Reports from "./scenes/reports";
+//import Maps  from "./scenes/maps";
+//import Calendar from "./scenes/calendar";
+
 
 function App() {
+  const [theme, colorMode] = useMode();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  <ColorModeContext.Provider value={colorMode}>
+    <ThemeProvider theme={theme}>
+      <CssBaseLine />
+      <div className="app"> 
+      <Sidebar />
+      <main ClassName="content">
+        <Topbar />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/team" element={<Team />}  />
+          <Route path="/reports" element={<Reports />}  />
+        </Routes>
+        <Routes>
+         
+         
+         
+         {/* <Route path="/maps" element={<Maps />}  />*/}
+         {/* <Route path="/calendar" element={<Calendar />}  />*/}
+          
+        </Routes>
+      </main>
+      </div>
+    </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
