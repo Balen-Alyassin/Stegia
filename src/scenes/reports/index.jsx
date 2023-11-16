@@ -84,13 +84,21 @@ const Reports = () => {
       field: "status",
       headerName: "Status",
       flex: 1,
+      renderCell: ({ row }) => {
+        const status = row.status || 'In Progress';
+        return (
+          <Box>
+            {status}
+          </Box>
+        );
+      },
     },
     {
       field: "actions",
       headerName: "Actions",
       flex: 1,
       renderCell: ({ row }) => {
-        const status = row.status || 'In Progress';
+        const status = row.status || 'Select';
         return (
           <Box>
             <select
@@ -99,7 +107,7 @@ const Reports = () => {
                 handleReportAction(row.id, e.target.value);
               }}
             >
-              <option value="In Progress">In Progress</option>
+              <option value="Select">Select</option>
               <option value="delete">Delete</option>
               <option value="activateDisposal">Activate Disposal</option>
             </select>
