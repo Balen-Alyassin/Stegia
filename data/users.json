@@ -2,18 +2,18 @@
     "users": [
       {
         "id": 1,
-        "username": "superadmin",
-        "role": "super admin"
+        "username": "admin",
+        "role": "Admin"
       },
       {
         "id": 2,
-        "username": "admin",
-        "role": "admin"
+        "username": "authority",
+        "role": "Authority"
       },
       {
         "id": 3,
-        "username": "user",
-        "role": "user"
+        "username": "citizen",
+        "role": "Citizen"
       }
     ]
   }

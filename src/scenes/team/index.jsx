@@ -35,9 +35,9 @@ const SelectSmall = ({ row, onRoleChange }) => {
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        <MenuItem value="user">user</MenuItem>
-        <MenuItem value="admin">admin</MenuItem>
-        <MenuItem value="super-admin">super-admin</MenuItem>
+        <MenuItem value="Citizen">Citizen</MenuItem>
+        <MenuItem value="Authority">Authority</MenuItem>
+        <MenuItem value="Admin">Admin</MenuItem>
       </Select>
     </FormControl>
   );
@@ -60,18 +60,25 @@ const Team = () => {
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "name",
-      headerName: "Name",
+      field: "firstName",
+      headerName: "First Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
+      field: "lastName",
+      headerName: "Last Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    /*{
       field: "age",
       headerName: "Age",
       type: "number",
       headerAlign: "left",
       align: "left",
-    },
+      flex: 1,
+    }, */
     {
       field: "phone",
       headerName: "Phone Number",
@@ -80,16 +87,28 @@ const Team = () => {
     {
       field: "email",
       headerName: "Email",
+      flex: 1.8,
+    },
+    {
+      field: "country",
+      headerName: "Country",
       flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "city",
+      headerName: "City",
+      flex: 1.3,
+      cellClassName: "name-column--cell",
     },
     {
       field: "access",
       headerName: "Access Level",
-      flex: 1.1,
+      flex: 1.3,
       renderCell: ({ row: { access } }) => {
         return (
           <Box
-            width="80%"
+            width="100%"
             m="0 auto"
             p="5px"
             display="flex"
@@ -101,10 +120,10 @@ const Team = () => {
             }
             borderRadius="4px"
           >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "super-admin" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "0px" }}>
+            {access === "Authority" && <AdminPanelSettingsOutlinedIcon />}
+            {access === "Admin" && <SecurityOutlinedIcon />}
+            {access === "Citizen" && <LockOpenOutlinedIcon />}
+            <Typography color={colors.grey[100]} sx={{ ml: "4px" }}>
               {access}
             </Typography>
           </Box>
@@ -114,7 +133,7 @@ const Team = () => {
     {
       field: "roles",
       headerName: "Change Roles",
-      flex: 1,
+      flex: 1.5,
       renderCell: ({ row }) => <SelectSmall row={row} onRoleChange={handleRoleChange} />,
     },
   ];

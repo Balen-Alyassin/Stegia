@@ -14,6 +14,7 @@ const Reports = () => {
   const [selectedReport, setSelectedReport] = React.useState(null);
   const [isEditModalOpen, setEditModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [isDetailsModalOpen, setDetailsModalOpen] = React.useState(false);
 
   const handleReportAction = (id, action) => {
     const updatedReportData = reportData.map((report) => {
@@ -23,6 +24,9 @@ const Reports = () => {
           setSelectedReport(report);
         } else if (action === "activateDisposal") {
           report.status = "Active for Disposal";
+        } else if (action === "details") {
+          setSelectedReport(report);
+          setDetailsModalOpen(true);
         }
       }
       return report;
@@ -41,6 +45,10 @@ const Reports = () => {
   const handleDeleteModalClose = () => {
     setDeleteModalOpen(false);
   };
+  
+  const handleDetailsModalClose = () => {
+    setDetailsModalOpen(false);
+  };
 
   const handleConfirmDelete = () => {
     // Perform delete action here
@@ -50,6 +58,41 @@ const Reports = () => {
     setSelectedReport(null);
   };
 
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Report Details</title>
+        </head>
+        <body>
+          <h1>Report Details</h1>
+          <p>ID: ${selectedReport?.id}</p>
+          <p>Title: ${selectedReport?.title}</p>
+          <p>Date: ${selectedReport?.date}</p>
+          <p>Description: ${selectedReport?.description}</p>
+          ${selectedReport?.image && `<img src="${selectedReport?.image}" alt="Report Image" style="width: 100%; height: auto;" />`}
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  const detailsModalContent = (
+    <div>
+      {/* Inside Report Details Pop-up */}
+      <p>Title: {selectedReport?.title}</p>
+      <p>Description: {selectedReport?.description}</p>
+      {selectedReport?.image && <img src={selectedReport?.image} alt="" style={{ width: '100%' , height: 'auto' }} />}
+      {/* Add more details as needed (check with Saad) */}
+    </div>
+  );
+  
+  
+  
+  
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -66,8 +109,8 @@ const Reports = () => {
       flex: 1,
     },
     {
-      field: "litterType",
-      headerName: "Type of Litter",
+      field: "categories",
+      headerName: "Categories",
       flex: 1,
     },
     {
@@ -76,45 +119,50 @@ const Reports = () => {
       flex: 1,
     },
     {
-      field: "userInfo",
-      headerName: "User Info",
+      field: "reportBy",
+      headerName: "Report By",
       flex: 1,
+    },
+    {
+      field: "reportDetails", // Add the new field
+      headerName: "Report Details",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <Box>
+          <Button onClick={() => 
+            handleReportAction(row.id, "details")} 
+            color="secondary">Details
+            </Button>
+        </Box>
+      ),
     },
     {
       field: "status",
       headerName: "Status",
       flex: 1,
-      renderCell: ({ row }) => {
-        const status = row.status || 'In Progress';
-        return (
-          <Box>
-            {status}
-          </Box>
-        );
-      },
+      renderCell: ({ row }) => (
+        <Box>
+          {row.status || 'In Progress'}
+        </Box>
+      ),
     },
     {
       field: "actions",
       headerName: "Actions",
       flex: 1,
-      renderCell: ({ row }) => {
-        const status = row.status || 'Select';
-        return (
-          <Box>
-            <select
-              value={status}
-              onChange={(e) => {
-                handleReportAction(row.id, e.target.value);
-              }}
-            >
-              <option value="Select">Select</option>
-              <option value="delete">Delete</option>
-              <option value="activateDisposal">Activate Disposal</option>
-            </select>
-            <Button onClick={() => handleEditReport(row)}>Edit</Button>
-          </Box>
-        );
-      },
+      renderCell: ({ row }) => (
+        <Box>
+          <select
+            value={row.status || 'Select'}
+            onChange={(e) => handleReportAction(row.id, e.target.value)}
+          >
+            <option value="Select">Select</option>
+            <option value="delete">Delete</option>
+            <option value="activateDisposal">Activate Disposal</option>
+          </select>
+          <Button onClick={() => handleEditReport(row)}>Edit</Button>
+        </Box>
+      ),
     },
   ];
 
@@ -184,7 +232,7 @@ const Reports = () => {
       {/* Delete Confirmation Modal */}
       <Dialog open={isDeleteModalOpen} 
         onClose={handleDeleteModalClose}
-        sx={{ /* check with saad if needed */ }}
+        sx={{ /* check with Saad if needed */ }}
       >
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent 
@@ -198,9 +246,34 @@ const Reports = () => {
       <Button onClick={handleDeleteModalClose} color="secondary">Cancel</Button>
       <Button onClick={handleConfirmDelete} color="secondary">Delete</Button>
     </DialogActions>
-      </Dialog>
-    </Box>
-  );
+    </Dialog>
+
+    {/* Report Details Modal Pop-up */}
+    <Dialog 
+      open={isDetailsModalOpen} 
+      onClose={handleDetailsModalClose } 
+      fullWidth
+      maxWidth="sm"
+    >
+      <DialogTitle color="secondary" fontSize={20}>Report Details</DialogTitle>
+      <DialogContent >
+        {detailsModalContent} 
+      </DialogContent>
+      <DialogActions>
+        <Button 
+        onClick={handlePrint} 
+        color="secondary"
+        >
+          Print</Button>
+        <Button 
+        onClick={handleDetailsModalClose} 
+        color="secondary"
+        >
+          Close</Button>
+      </DialogActions>
+    </Dialog>
+  </Box>
+);
 };
 
 export default Reports;
