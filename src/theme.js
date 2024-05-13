@@ -78,7 +78,7 @@ export const tokens = (mode) => ({
     100: "#080b12",
     200: "#040509",
     300: "#0c101b",
-    400: "#101624",
+    400: "#f2f0f0",  // the issue was here
     500: "#141b2d",
     600: "#434957",
     700: "#727681",
@@ -203,12 +203,12 @@ export const ColorModeContext = createContext({
 
 //condition of set light and dark mode
 export const useMode = () =>{
-    const [mode, setMode] = useState("dark");
+    const [mode, setMode] = useState("light");
 
     const colorMode = useMemo(
         () => ({
             toggleColorMode: () =>
-            setMode((prev) => (prev === "light" ? "dark" : "light")),
+            setMode((prev) => (prev === "dark" ? "light" : "dark")),
         }),
         []
     );

@@ -1,279 +1,166 @@
-import * as React from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { Box, TextField } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import axios from 'axios';
 import { tokens } from "../../theme";
-import { mockDataReports } from "../../data/mockdata";
+//import { mockDataReports as Data } from "../../data/mock_data";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
+
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+
 
 const Reports = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [reportData, setReportData] = React.useState(mockDataReports); // with fetch must be null
-  const [selectedReport, setSelectedReport] = React.useState(null);
-  const [isEditModalOpen, setEditModalOpen] = React.useState(false);
-  const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [isDetailsModalOpen, setDetailsModalOpen] = React.useState(false);
+ // const [reportData, setReportData] = useState(Data); 
+  const [reportData, setReportData] = useState([]);
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
+  
 
-  const handleReportAction = (id, action) => {
-    const updatedReportData = reportData.map((report) => {
-      if (report.id === id) {
-        if (action === "delete") {
-          setDeleteModalOpen(true);
-          setSelectedReport(report);
-        } else if (action === "activateDisposal") {
-          report.status = "Active for Disposal";
-        } else if (action === "details") {
-          setSelectedReport(report);
-          setDetailsModalOpen(true);
-        }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/data');
+        setReportData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-      return report;
-    });
-    setReportData(updatedReportData);
-  };
+    };
 
-  const handleEditReport = () => {
-    setEditModalOpen(true);
-  };
+    fetchData();
+  }, []);
 
-  const handleEditModalClose = () => {
-    setEditModalOpen(false);
-  };
 
-  const handleDeleteModalClose = () => {
-    setDeleteModalOpen(false);
-  };
-  
-  const handleDetailsModalClose = () => {
-    setDetailsModalOpen(false);
-  };
+  // Filter data based on date range and checkboxes
+  const filteredData = reportData.filter(entry => {
+    const entryDate = new Date(entry.date_added);
+    return (!dateFrom || entryDate >= dateFrom) && (!dateTo || entryDate <= dateTo);
+  });
 
-  const handleConfirmDelete = () => {
-    // Perform delete action here
-    const updatedReportData = reportData.filter((report) => report.id !== selectedReport.id);
-    setReportData(updatedReportData);
-    setDeleteModalOpen(false);
-    setSelectedReport(null);
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/data/${id}`, {
+        status: newStatus
+      });
+      if (response.status === 200) {
+        // Update local state to reflect the new status
+        setReportData((prevData) =>
+          prevData.map((data) =>
+            data._id === id ? { ...data, status: newStatus } : data
+          )
+        );
+      } else {
+        alert('Failed to update status.');
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      alert('Error updating status.');
+    }
   };
-
-  const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Report Details</title>
-        </head>
-        <body>
-          <h1>Report Details</h1>
-          <p>ID: ${selectedReport?.id}</p>
-          <p>Title: ${selectedReport?.title}</p>
-          <p>Date: ${selectedReport?.date}</p>
-          <p>Description: ${selectedReport?.description}</p>
-          ${selectedReport?.image && `<img src="${selectedReport?.image}" alt="Report Image" style="width: 100%; height: auto;" />`}
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    printWindow.print();
-  };
-
-  const detailsModalContent = (
-    <div>
-      {/* Inside Report Details Pop-up */}
-      <p>Title: {selectedReport?.title}</p>
-      <p>Description: {selectedReport?.description}</p>
-      {selectedReport?.image && <img src={selectedReport?.image} alt="" style={{ width: '100%' , height: 'auto' }} />}
-      {/* Add more details as needed (check with Saad) */}
-    </div>
-  );
-  
-  
-  
   
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    {
-      field: "date",
-      headerName: "Date",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-    },
-    {
-      field: "time",
-      headerName: "Time",
-      flex: 1,
-    },
-    {
-      field: "categories",
-      headerName: "Categories",
-      flex: 1,
-    },
-    {
-      field: "location",
-      headerName: "Location",
-      flex: 1,
-    },
-    {
-      field: "reportBy",
-      headerName: "Report By",
-      flex: 1,
-    },
-    {
-      field: "reportDetails", // Add the new field
-      headerName: "Report Details",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Box>
-          <Button onClick={() => 
-            handleReportAction(row.id, "details")} 
-            color="secondary">Details
-            </Button>
-        </Box>
-      ),
-    },
+
+    { field: "_id", headerName: "ID", flex: 1 },
+    { field: "valve_module_part_number", headerName: "PartNumber", flex: 0.5 },
+    { field: "valve_module_revision_number", headerName: "RevisionN", flex: 0.5 },
+    { field: "pcb_article_number", headerName: "art.No", flex: 0.5 },
+    { field: "pcb_revision", headerName: "Revision", flex: 0.5 },
+    { field: "pcb_manufacturing_year", headerName: "Year", flex: 0.5 },
+    { field: "pcb_manufacturing_week", headerName: "Week", flex: 0.5 },
+    { field: "pcb_serial", headerName: "Serial", flex: 0.5 },
+    { field: "idle_current_24v", headerName: "Idle-24V", flex: 0.5 },
+    { field: "idle_current_3v", headerName: "Idle-3.3V", flex: 0.5 },
+    { field: "solenoid1_current", headerName: "Sol 1", flex: 0.2 },
+    { field: "solenoid2_current", headerName: "Sol 2", flex: 0.2 },
+    { field: "solenoid3_current", headerName: "Sol 3", flex: 0.5 },
+    { field: "solenoid4_current", headerName: "Sol 4", flex: 0.5 },
+    { field: "solenoid5_current", headerName: "Sol 5", flex: 0.5 },
+    { field: "solenoid6_current", headerName: "Sol 6", flex: 0.5 },
+    { field: "solenoid7_current", headerName: "Sol 7", flex: 0.5 },
+    { field: "solenoid8_current", headerName: "Sol 8", flex: 0.5 },
+    { field: "test_person_id", headerName: "T.PersonID", flex: 0.5 },
+    { field: "date_added", headerName: "Date", flex: 0.5 },
+    { field: "time_added", headerName: "Time", flex: 0.5 },
     {
       field: "status",
       headerName: "Status",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Box>
-          {row.status || 'In Progress'}
-        </Box>
-      ),
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <strong style={{
+            color: params.value === 'Passed' ? 'green' : params.value === 'Failed' ? 'red' : 'black',
+          }}>
+            {params.value}
+          </strong>
+        );
+      },
     },
-    {
-      field: "actions",
-      headerName: "Actions",
-      flex: 1,
-      renderCell: ({ row }) => (
-        <Box>
-          <select
-            value={row.status || 'Select'}
-            onChange={(e) => handleReportAction(row.id, e.target.value)}
-          >
-            <option value="Select">Select</option>
-            <option value="delete">Delete</option>
-            <option value="activateDisposal">Activate Disposal</option>
-          </select>
-          <Button onClick={() => handleEditReport(row)}>Edit</Button>
-        </Box>
-      ),
-    },
+    { field: "actions",
+    headerName: "Actions",
+    flex: 1,
+    renderCell: ({ row }) => (
+      <Box>
+      <select
+        value={row.status}
+        onChange={(e) => handleStatusChange(row._id, e.target.value)}
+      >
+        <option value="In Progress">In Progress</option>
+        <option value="Passed">Passed</option>
+        <option value="Failed">Failed</option>
+      </select>
+    </Box>
+    ),
+  },
   ];
+  
 
-  return (
-    <Box m="20px">
-      <Header title="REPORTS" subtitle="List of Reports" />
-      <Box
-        m="40px 0 0 0"
-        height="75vh"
-        sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& select": {
-            width: "100%",
-            padding: "5px",
-          },
-          "& .custom-toolbar": {
-            backgroundColor: colors.greenAccent[200], // Set the background color to white
-          },
-        }}
-      >
-        <div style={{ height: 750, width: '100%' }}>
-          {/* Added a filter input */}
-          <DataGrid
-            rows={reportData}
-            columns={columns}
-            components={{
-              Toolbar: () => (
-                <div className='custom-toolbar'>
-                  <GridToolbar />
-                </div>
-              ),
-            }}
-          />
+    return (
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <div style={{ height: "800px"}}>
+          <Box m="20px">
+            <Header title="REPORTS" subtitle="List of Tests" />
+            <Box display="flex" gap={2} mb={2}>
+              <p> Date Search</p>
+              <DatePicker
+                label="From"
+                value={dateFrom}
+                onChange={setDateFrom}
+                renderInput={(params) => <TextField {...params} />}
+              />
+              <DatePicker
+                label="To"
+                value={dateTo}
+                onChange={setDateTo}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </Box>
+
+            <Box m="40px 0 0 0" height="75vh" width="165vh">
+              <DataGrid
+                rows={filteredData}
+                columns={columns}
+                getRowId={(row) => row._id}  // Use MongoDB's `_id`
+                components={{ Toolbar: GridToolbar }}
+                sx={{
+                  "& .MuiDataGrid-root": { border: "none" },
+                  "& .MuiDataGrid-cell": { borderBottom: "none" },
+                  "& .MuiDataGrid-columnHeaders": { backgroundColor: colors.blueAccent[700] },
+                  "& .MuiDataGrid-virtualScroller": { backgroundColor: colors.primary[400] },
+                  "& .MuiDataGrid-footerContainer": { borderTop: "none", backgroundColor: colors.blueAccent[700] },
+                  "& .MuiDataGrid-toolbarContainer": {backgroundColor: colors.blueAccent[700] },
+                }}
+              />
+            </Box>
+          </Box>
         </div>
-      </Box>
-
-      {/* Edit Report Modal */}
-      <Dialog 
-        open={isEditModalOpen} 
-        onClose={handleEditModalClose}>
-        <DialogTitle>Edit Report</DialogTitle>
-        <DialogContent>
-          {/* Include form fields for editing report details */}
-          {/* For example: <TextField label="New Location" value={selectedReport.location} /> */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditModalClose}>Cancel</Button>
-          <Button onClick={handleEditModalClose}>Save Changes</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Confirmation Modal */}
-      <Dialog open={isDeleteModalOpen} 
-        onClose={handleDeleteModalClose}
-        sx={{ /* check with Saad if needed */ }}
-      >
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent 
-          sx={{ backgroundColor: colors.neutral, color: colors.neutral }}
-        >
-           Are you sure you want to delete this report?
-       </DialogContent>
-       <DialogActions 
-       sx={{ backgroundColor: colors.neutral }}
-       >
-      <Button onClick={handleDeleteModalClose} color="secondary">Cancel</Button>
-      <Button onClick={handleConfirmDelete} color="secondary">Delete</Button>
-    </DialogActions>
-    </Dialog>
-
-    {/* Report Details Modal Pop-up */}
-    <Dialog 
-      open={isDetailsModalOpen} 
-      onClose={handleDetailsModalClose } 
-      fullWidth
-      maxWidth="sm"
-    >
-      <DialogTitle color="secondary" fontSize={20}>Report Details</DialogTitle>
-      <DialogContent >
-        {detailsModalContent} 
-      </DialogContent>
-      <DialogActions>
-        <Button 
-        onClick={handlePrint} 
-        color="secondary"
-        >
-          Print</Button>
-        <Button 
-        onClick={handleDetailsModalClose} 
-        color="secondary"
-        >
-          Close</Button>
-      </DialogActions>
-    </Dialog>
-  </Box>
-);
-};
-
-export default Reports;
+      </LocalizationProvider>
+    );
+  };
+  
+  export default Reports;

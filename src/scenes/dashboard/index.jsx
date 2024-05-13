@@ -5,7 +5,7 @@ const Dashboard = () => {
     return <Box m="20px">
         <Box display="flex" justifyContent="space-between" alignItems="center">
             
-        <Header title="DASHBOARD" subtitle="Welcome to Cobol Littering" />
+        <Header title="DASHBOARD" subtitle="Here the graphana will be shown" />
         </Box>
     </Box>
 };

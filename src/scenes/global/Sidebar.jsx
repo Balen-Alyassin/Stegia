@@ -11,9 +11,9 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 //import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 //import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 //import HelpOutlinedIcon from "@mui/icons-material/HelpOutlined";
-//import BarchartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-//import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
-//import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
+import BarchartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
+import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
+import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 //import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
@@ -75,8 +75,8 @@ const Sidebar = () => {
                             <Box display= "flex" justifyContent="space-between"
                             alignItems="center" ml="15px"
                             >
-                                <Typography variant="h3" color={colors.grey[100]}> 
-                                ADMINS 
+                                <Typography variant="h4" color={colors.blueAccent[500]}> 
+                                STEGIA AB
                                 </Typography>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <MenuOutlinedIcon />
@@ -116,11 +116,18 @@ const Sidebar = () => {
                     <Box paddingLeft={isCollapsed ? undefined : "10%"}>
                         <Item 
                             title="Dashboard"
-                            to="/"
+                            to="/dashboard"
                             icon={<HomeOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
+                      { /* <Item 
+                            title="Login"
+                            to="/login"
+                            icon={<PersonOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        /> */}
                         <Item 
                             title="Manage Team"
                             to="/team"
@@ -143,16 +150,10 @@ const Sidebar = () => {
                             selected={selected}
                             setSelected={setSelected}
                         />
-                      {/*  <Item 
-                            title="Profile Form"
-                            to="/form"
-                            icon={<PersonOutlinedIcon />}
-                            selected={selected}
-                            setSelected={setSelected}
                         <Item 
-                            title="Calendar"
-                            to="/calendar"
-                            icon={<CalendarTodayOutlinedIcon />}
+                            title="Line Chart"
+                            to="/line"
+                            icon={<TimelineOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
@@ -167,6 +168,19 @@ const Sidebar = () => {
                             title="Pie Chart"
                             to="/pie"
                             icon={<PieChartOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                      {/*  <Item 
+                            title="Profile Form"
+                            to="/form"
+                            icon={<PersonOutlinedIcon />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        <Item 
+                            title="Calendar"
+                            to="/calendar"
+                            icon={<CalendarTodayOutlinedIcon />}
                             selected={selected}
                             setSelected={setSelected}
                         />
